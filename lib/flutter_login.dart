@@ -146,6 +146,9 @@ class __HeaderState extends State<_Header> {
             widget.logoPath,
             filterQuality: FilterQuality.high,
             height: logoHeight,
+            fit: BoxFit.contain,
+            alignment: Alignment.center,
+            width: (MediaQuery.of(context).size.width)*0.7,
           )
         : NullWidget();
 
@@ -208,7 +211,9 @@ class FlutterLogin extends StatefulWidget {
     @required this.onSignup,
     @required this.onLogin,
     @required this.onRecoverPassword,
-    this.title = 'LOGIN',
+    // this.title = 'LOGIN',
+    this.onPressedSignUp,
+    this.title,
     this.logo,
     this.messages,
     this.theme,
@@ -218,10 +223,17 @@ class FlutterLogin extends StatefulWidget {
     this.logoTag,
     this.titleTag,
     this.showDebugButtons = false,
+    this.headerMarginBottom = 15,
+    this.headerMarginTop = 0,
+    this.hideButtonForgotPassword = false,
+    this.hideButtonSignUp = false,
   }) : super(key: key);
 
   /// Called when the user hit the submit button when in sign up mode
   final AuthCallback onSignup;
+
+  /// Called when the user hit the sign up button when in login mode
+  final Function onPressedSignUp;
 
   /// Called when the user hit the submit button when in login mode
   final AuthCallback onLogin;
@@ -268,6 +280,19 @@ class FlutterLogin extends StatefulWidget {
   /// release mode, this will be overrided to false regardless of the value
   /// passed in
   final bool showDebugButtons;
+
+  /// Header bottom margin
+  final int headerMarginBottom;
+
+  /// Header top margin
+  final int headerMarginTop;
+
+  /// Hide the Button Forgot Password
+  final bool hideButtonForgotPassword;
+
+  /// Hide the Button SignUp
+  final bool hideButtonSignUp;
+
 
   static final FormFieldValidator<String> defaultEmailValidator = (value) {
     if (value.isEmpty || !Regex.email.hasMatch(value)) {
@@ -533,6 +558,9 @@ class _FlutterLoginState extends State<FlutterLogin>
     final theme = _mergeTheme(theme: Theme.of(context), loginTheme: loginTheme);
     final deviceSize = MediaQuery.of(context).size;
     const headerMargin = 15;
+    //final headerHeight = ((deviceSize.height * .3) < 200) ? 200.0 : deviceSize.height * .3;
+    final logoMarginBottom = widget.headerMarginBottom;
+    final logoMarginTop = widget.headerMarginTop;
     const cardInitialHeight = 300;
     final cardTopPosition = deviceSize.height / 2 - cardInitialHeight / 2;
     final headerHeight = cardTopPosition - headerMargin;
@@ -575,7 +603,7 @@ class _FlutterLoginState extends State<FlutterLogin>
                     Positioned(
                       child: AuthCard(
                         key: authCardKey,
-                        padding: EdgeInsets.only(top: cardTopPosition),
+                        padding: EdgeInsets.only(top: cardTopPosition + logoMarginTop),
                         loadingController: _loadingController,
                         emailValidator: emailValidator,
                         passwordValidator: passwordValidator,
@@ -584,7 +612,7 @@ class _FlutterLoginState extends State<FlutterLogin>
                       ),
                     ),
                     Positioned(
-                      top: cardTopPosition - headerHeight - headerMargin,
+                      top: cardTopPosition - headerHeight - logoMarginBottom + logoMarginTop,
                       child: _buildHeader(headerHeight, loginTheme),
                     ),
                   ],
